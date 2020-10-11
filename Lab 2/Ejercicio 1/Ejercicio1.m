@@ -1,3 +1,5 @@
+%------------------------------SOLICITUD DE DATOS------------------------------%
+
 %Se solicita la onda m(t)
 m = input("Ingrese la funcion de la onda m(t): ", 's');
 m = inline(m, "t");
@@ -22,7 +24,9 @@ plot(t, m(t), "-");
 axis([0 f -1.5 1.5]);
 
 %Opcion para graficar el muestreo y la cuantizacion
-opcion = 2;
+opcion = 1;
+
+%------------------------------------------------------------------------------%
 
 %-----------------------------------MUESTREO-----------------------------------%
 
@@ -43,30 +47,42 @@ end
 
 axis([0 f -1.5 1.5]);
 
+%------------------------------------------------------------------------------%
+
 %---------------------------------CUANTIZACION---------------------------------%
 
 %Cantidad de zonas, calculadas por la amplitud maxima de la onda
-L = 2 ^ 3;
+L = 2 ^ n;
 
 %Tamaño Delta de cada zona
 Delta = (2*mp) / L;
 
+%Funcion que calcula la zona en la cual se encuentra un valor x
+zona = inline(" floor((x + mp)/Delta) - (x >= mp) ", "x");
+
+%Funcion que cuantiza los valores dados en el parametro x
+cuantizacion = inline(" zona(x)*Delta - mp + (Delta/2) ", "x");
+
 subplot(2,2,3);
 
 if opcion == 1
-  %Se crea una funcion coder en base al vector tN
-  coder = inline(" Delta * floor(m(tn) / Delta) + (Delta/2) ", "t");
   %Se grafica en una grafica de puntos
-  stem(tn, coder(tn));
+  stem(tn, cuantizacion(m(tn)) );
 else
-  %Se crea una funcion coder en base a la funcion m(t) y la funcion delta
-  coder = inline(" Delta * floor(m(t).*delta(t) / Delta) + (Delta/2) ", "t");
   %Se grafica la codificacion
-  plot(t, coder(t));
+  plot(t, cuantizacion( m(t).*delta(t) ));
 end
+
+%------------------------------------------------------------------------------%
 
 %---------------------------------CODIFICACION---------------------------------%
 
 
 
+%------------------------------------------------------------------------------%
+
 %---------------------------FORMATOS DE SEÑALIZACION---------------------------%
+
+
+
+%------------------------------------------------------------------------------%
