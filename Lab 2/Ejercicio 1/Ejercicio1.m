@@ -88,8 +88,109 @@ codificacion = cellstr(dec2bin(zona(m(tn))));
 
 %------------------------------------------------------------------------------%
 
-%---------------------------FORMATOS DE SEÑALIZACION---------------------------%
+%-------Literal d. REPRESENTACION DEL PULSO-------------------------------
+disp("Seleccione el tipo de codificación :");
+disp("1-Unipolar NRZ");
+disp("2-Bipolar NRZ");
+disp("3-Unipolar RZ");
+disp("4-Bipolar RZ");
+disp("5-AMI");
+disp("6-Manchester");
+opcion=input("ingrese la opción: ");
+y=[];
 
+#Tipos dependiendo de la eleccion
+f_s=100;
+#No Return to Zero
+NRZ=ones(1,f_s);
+#Return Zero
+RZ= [ones(1,f_s/2) zeros(1,f_s/2)];
+#Caso especial para Manchester
+Man=[ones(1,f_s/2)  -ones(1,f_s/2)] ;
+
+switch (opcion)
+	case 1
+		#El nivel de amplitud se mantiene durante todo el intervalo de bit
+    #Solo admite salidas positivas
+		tipo=NRZ;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+		            y=[y  tipo];
+		        case 0
+		            y=[y  (0*tipo)];        
+		    end
+		end
+	case 2
+		#El nivel de amplitud se mantiene durante todo el intervalo de bit
+    #Admite salidas positivas y negativas
+		tipo=NRZ;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+		            y=[y  tipo];
+		        case 0
+		             y=[y  -tipo];
+		    end
+		end
+	case 3
+		#El pulso positivo retorna a cero
+    #Solo admite salidas positivas
+		tipo=RZ;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+		            y=[y  tipo];
+		        case 0
+		            y=[y  (0*tipo)];        
+		    end
+		end
+	case 4
+		#Pulsos con retorno a zero en la mitad del bit
+    #Admite salidas positivas y negativas
+		tipo=RZ;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+		            y=[y  tipo];
+		        case 0
+		             y=[y  -tipo];
+		    end
+		end
+	case 5
+		#Pulsos de 1 se alternan entre positivo y negativo,pulso 0 ausencia de pulso
+		tipo=RZ;
+		count = 0;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+              if mod (count,2) == 0
+                y=[y  tipo];
+              else
+                y=[y  -tipo];		          	
+              endif
+              count++;
+		        case 0
+		            y=[y  (0*tipo)];        
+		    end
+		end		
+	case 6
+		#pulso positivo: inicia positivo termina negativo
+    #pulso negativo: inicia negativo termina positivo 
+		tipo=Man;
+		for i=1:length(y_niveles_binario)
+		    switch y_niveles_binario(i)
+		        case 1
+		            y=[y  tipo];
+		        case 0
+		             y=[y  -tipo];
+		    end
+		end
+endswitch
+
+t1=(0:(length(y)-1))/f_s;
+figure(2);
+subplot(1,1,1);plot(t1,y,'k');axis([0 5 -1.1 1.1]); title('Señal codificada');xlabel('nT_s'); ylabel('x(nT_s)');
 
 
 %------------------------------------------------------------------------------%
