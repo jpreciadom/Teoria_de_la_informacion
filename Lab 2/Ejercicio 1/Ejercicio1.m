@@ -40,7 +40,7 @@ if opcion == 1
   %Se grafica en una grafica de puntos
   stem(tn, m(tn));
 else
-  %Se crea la función delta para tomar muestras de la onda
+  %Se crea la funciï¿½n delta para tomar muestras de la onda
   delta = inline(" rem(t, T) <  T/8 ", "t");
   
   %Se grafican las muestras tomadas de la onda, delta(t)*m(t)
@@ -56,7 +56,7 @@ axis([0 f -(mp+0.5) (mp+0.5)]);
 %Cantidad de zonas, calculadas por la amplitud maxima de la onda
 L = 2 ^ n;
 
-%Tamaño Delta de cada zona
+%Tamaï¿½o Delta de cada zona
 Delta = (2*mp) / L;
 
 %Funcion que calcula la zona en la cual se encuentra un valor x
@@ -82,21 +82,26 @@ axis([-0.2 f+0.2 -(mp+0.5) (mp+0.5)]);
 
 %---------------------------------CODIFICACION---------------------------------%
 
-codificacion = cellstr(dec2bin(zona(m(tn))));
-
-
+y_niveles_binario = dec2bin(zona(m(tn)));
+codificacion = cellstr(y_niveles_binario);
+y_niveles_binario = [];
+for i=1:length(codificacion)
+  y_niveles_binario = [y_niveles_binario sprintf('%d',base2dec(codificacion(i,1),10)) - '0'];
+  codificacion(i,1) = strcat("CÃ³digo numÃ©rico: ", mat2str(zona(m(tn))(i)),"    CÃ³digo binario: ", codificacion(i,1) );
+endfor
+codificacion
 
 %------------------------------------------------------------------------------%
 
 %-------Literal d. REPRESENTACION DEL PULSO-------------------------------
-disp("Seleccione el tipo de codificación :");
+disp("Seleccione el tipo de codificaciï¿½n :");
 disp("1-Unipolar NRZ");
 disp("2-Bipolar NRZ");
 disp("3-Unipolar RZ");
 disp("4-Bipolar RZ");
 disp("5-AMI");
 disp("6-Manchester");
-opcion=input("ingrese la opción: ");
+opcion=input("ingrese la opciï¿½n: ");
 y=[];
 
 #Tipos dependiendo de la eleccion
@@ -188,9 +193,19 @@ switch (opcion)
 		end
 endswitch
 
-t1=(0:(length(y)-1))/f_s;
-figure(2);
-subplot(1,1,1);plot(t1,y,'k');axis([0 5 -1.1 1.1]); title('Señal codificada');xlabel('nT_s'); ylabel('x(nT_s)');
+  t1=(0:(length(y)-1))/f_s;
+  figure(2);
+  subplot(1,1,1);plot(t1,y,'k');set(gca,'Xlim',[0 8]); set(gca,'XTick',(0:1:8)); axis([0 8 -1.1 1.1]); title('SeÃ±al codificada');xlabel('nT_s'); ylabel('x(nT_s)');
+  
+  %-----------------Literal e. RECUPERAR M(T)----------------
+
+sum=0;
+w_m=f;
+for i=0:100
+  fun=m(i*T)*(sin(w_m.*(t-i*T))/w_m.*(t-i*T));
+  sum=sum+fun;
+endfor
+figure(3);
+plot(t,sum); title('Recuperacion de la seÃ±al');
 
 
-%------------------------------------------------------------------------------%
