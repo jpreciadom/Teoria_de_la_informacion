@@ -4,31 +4,24 @@
 m = input("Ingrese la funcion de la onda m(t): ", 's');
 m = inline(m, "t");
 
-%Valor n que no se para que sirve
-n = 3;
-
-%Valor maximo de la onda
-mp = 1;
-
 %Se solicita la frecuencia de la onda m(t)
 f = input("Indique la frecuencia de la funcion: ");
 
 %Vector con los valores t desde 0 hasta la frecuencia de la onda para graficarla
 t = [0 : 0.001 : f];
 
+%Valor maximo de la onda
+mp = max(m(t));
+
 %Se grafica la onda m(t)
 subplot(2,2,1);
-plot(t, m(t), "-");
+plot(t, m(t), "-"); xlabel("t"); ylabel("m(t)"); title("Onda m(t)");
 axis([0 f -(mp+0.5) (mp+0.5)]);
-
-%Opcion para graficar el muestreo y la cuantizacion
-opcion = 1;
 
 %------------------------------------------------------------------------------%
 
 %-----------------------------------MUESTREO-----------------------------------%
 
-subplot(2,2,2);
 
 %Se calcula el tiempo T que indica cada cuanto se debe toma una muestra de la onda
 T = 1/(2*f);
@@ -36,22 +29,19 @@ T = 1/(2*f);
 %Vector para muestrear la onda m(t) cada T segundos
 tn = [0: T : f];
 
-if opcion == 1
-  %Se grafica en una grafica de puntos
-  stem(tn, m(tn));
-else
-  %Se crea la funciï¿½n delta para tomar muestras de la onda
-  delta = inline(" rem(t, T) <  T/8 ", "t");
-  
-  %Se grafican las muestras tomadas de la onda, delta(t)*m(t)
-  plot(t, m(t).*delta(t));
-end
+%Se grafica en una grafica de puntos
+subplot(2,2,2);
+stem(tn, m(tn));
+xlabel("t_n"); ylabel("m(t_n)"); title("Onda m(t) muestreada");
 
 axis([0 f -(mp+0.5) (mp+0.5)]);
 
 %------------------------------------------------------------------------------%
 
 %---------------------------------CUANTIZACION---------------------------------%
+
+%Valor n que no se para que sirve
+n = input("Ingrese el numero de bits a codificar: ");
 
 %Cantidad de zonas, calculadas por la amplitud maxima de la onda
 L = 2 ^ n;
@@ -65,15 +55,10 @@ zona = inline(" floor((x + mp)/Delta) - (x >= mp) ", "x");
 %Funcion que cuantiza los valores dados en el parametro x
 cuantizacion = inline(" zona(x)*Delta - mp + (Delta/2) ", "x");
 
+%Se grafica en una grafica de puntos
 subplot(2,2,3);
-
-if opcion == 1
-  %Se grafica en una grafica de puntos
-  stem(tn, cuantizacion(m(tn)) );
-else
-  %Se grafica la codificacion
-  plot(t, cuantizacion( m(t).*delta(t) ));
-end
+stem(tn, cuantizacion(m(tn)));
+xlabel("t_n"); ylabel("m(t_n)"); title("Cuantizacion de la onda m(t)");
 
 
 axis([-0.2 f+0.2 -(mp+0.5) (mp+0.5)]);
@@ -87,7 +72,7 @@ codificacion = cellstr(y_niveles_binario);
 y_niveles_binario = [];
 for i=1:length(codificacion)
   y_niveles_binario = [y_niveles_binario sprintf('%d',base2dec(codificacion(i,1),10)) - '0'];
-  codificacion(i,1) = strcat("CÃ³digo numÃ©rico: ", mat2str(zona(m(tn))(i)),"    CÃ³digo binario: ", codificacion(i,1) );
+  codificacion(i,1) = strcat("Código numérico: ", mat2str(zona(m(tn))(i)),"    Código binario: ", codificacion(i,1) );
 endfor
 codificacion
 
@@ -101,7 +86,7 @@ disp("3-Unipolar RZ");
 disp("4-Bipolar RZ");
 disp("5-AMI");
 disp("6-Manchester");
-opcion=input("ingrese la opciï¿½n: ");
+opcion=input("ingrese la opción: ");
 y=[];
 
 #Tipos dependiendo de la eleccion
