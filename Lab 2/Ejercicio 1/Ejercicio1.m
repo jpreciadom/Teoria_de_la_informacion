@@ -91,7 +91,7 @@ while 1
   disp("5-AMI");
   disp("6-Manchester");
   disp("")
-  opcion=input("ingrese la opción: ");
+  opcion=input("Ingrese la opción: ");
   y=[];
 
   #Tipos dependiendo de la eleccion
@@ -188,9 +188,29 @@ while 1
     t1=(0:(length(y)-1))/f_s;
     subplot(2,2,4);
     plot(t1,y,'k');set(gca,'Xlim',[0 8]); set(gca,'XTick',(0:1:8));
-    axis([0 8 -1.1 1.1]); title('SeÃ±al codificada');xlabel('nT_s'); ylabel('x(nT_s)');
+    axis([0 8 -1.1 1.1]); title('Señal codificada');xlabel('nT_s'); ylabel('x(nT_s)');
     disp(""); disp(""); disp(""); disp(""); disp(""); disp("");
 endwhile
+
+disp("");
   
   %-----------------Literal e. RECUPERAR M(T)----------------
 
+%Vector para almacenar el resultado de demodulación
+deMod = tn;
+w = 2*pi*f;
+
+%Ciclo for para iterar sobre valores t almacenados en tn
+for i = 1:size(tn,2)
+  deMod(i) = 0;
+  %Ciclo for para aplicar la sumatoria de la formula 5.2
+  for k = 1:size(tn,2)
+    deMod(i) = deMod(i) + (m(tn(k)) * sinc(w*(tn(i)-tn(k))));
+    deMod(i) = deMod(i) + (m(-tn(k)) * sinc(w*(tn(i)+tn(k))));
+  endfor
+endfor
+
+%Se grafica tn (valores de t) vs deMod (resultados obtenidos en la demodulacion)
+subplot(2,2,4);
+plot(tn, deMod); xlabel("t"); ylabel("m(t)"); title("Demodulación");
+axis([0 f -(mp+0.5) (mp+0.5)]); 
