@@ -9,7 +9,7 @@ Pyx = input("Ingrese la matriz de [P(Y|X)]: ");
 disp("");
 
 % Se calcula el tamaño del alfabeto de la fuente X
-m = size(Px, 1);
+m = size(Px, 2);
 
 % Se calculan la cantidad de columnas de la matrix [P(Y|X)]
 n = size(Pyx, 2);
@@ -60,7 +60,7 @@ disp("");
 Hyx = 0;
 for xi = 1:m
   for yj = 1:n
-    Hyx = Hyx + (Pxy(xi, yj) * log2(Pxy(xi,yj)));
+    Hyx = Hyx + (Pxy(xi, yj) * log2(Pyx(yj,xi)));
   endfor
 endfor
 Hyx = Hyx * (-1);
