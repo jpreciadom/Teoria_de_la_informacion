@@ -13,7 +13,7 @@ Ht = [1 1 1;
       1 1 0;
       1 0 0;
       0 1 0;
-      0 0 1]
+      0 0 1];
 disp(newline);
 
 % Se crea una tabla vacia para almacenar las palabras y su codificación
@@ -32,6 +32,7 @@ d = d - '0';
 % agrega como columna a la tabla
 cod = codificar(d(1:8,:), G);
 T.("c") = cod;
+cod = cod-'0';
 
 % Se imprime la tabla
 disp(T);
@@ -49,28 +50,92 @@ while(opcion ~= 0)
     disp(newline);
     %If para mirar la opcion ingresada
     if(opcion == 1)
+        % Tabla para mostrar la codificación del mensaje ingresado
         TC = table;
+        % Se solicita el mensaje a codificar
         mensaje = input("Ingrese el mensaje binario que desea codificar: ", "s");
         disp(newline);
+        % Se calcula el tamaño del mensaje
         mSize = size(mensaje, 2);
-        bloques = mSize/k;
         
-        indices = zeros(bloques,1);
-        m = {bloques};
-        for i = 1 : bloques
-            indices(i, 1) = i;
-            im = "";
-            for j = 1:k
-                im = im + mensaje((i*k)-k+j);
+        % Se verifica que el mensaje tenga un tamaño múltiplo de k
+        if(mod(mSize, k) == 0)
+            % Se calcula la cantidad de bloques 
+            bloques = mSize/k;
+            % Vector para almacenar los indices de cada bloque
+            indices = zeros(bloques,1);
+            % Celdas para almacenar los palabas en cada bloque
+            m = {bloques};
+            % Se crean las palabras de tamaño k y se almacenan en el i-ésimo
+            % bloque
+            for i = 1 : bloques
+                indices(i, 1) = i;
+                im = "";
+                for j = 1:k
+                    im = im + mensaje((i*k)-k+j);
+                end
+                m(1,i) = cellstr(im);
             end
-            m(1,i) = cellstr(im);
+            % Se cambia de tipo celda a matriz de caracteres
+            m = char(string(m)');
+            % Se agrega la columna de indices a la tabla
+            TC.("i") = indices;
+            % Se agregan los bloques con las palabras a la tabla
+            TC.("bloque_i") = m;
+            % Se codifican las palabras y se agregan a la tabla
+            TC.("c_i") = codificar(m, G);
+            % Se muestra la tabla
+            disp(TC);
+        else
+            disp("Tamaño del mensaje no válido, retornando.......");
         end
-        m = char(string(m)');
-        TC.("i") = indices;
-        TC.("bloque_i") = m;
-        TC.("c_i") = codificar(m, G);
-        disp(TC);
     elseif(opcion == 2)
-        mensaje = input("Ingrese el mensaje que desea decodificar: ");
+        % Tabla para mostrar la codificación del mensaje ingresado
+        TC = table;
+        % Se solicita el mensaje a codificar
+        mensaje = input("Ingrese el mensaje que desea decodificar: ", "s");
+        disp(newline);
+        % Se calcula el tamaño del mensaje
+        mSize = size(mensaje, 2);
+        
+        % Se verifica que el codigo tenga un tamaño múltiplo de n
+        if(mod(mSize, n) == 0)
+            % Se calcula la cantidad de bloques 
+            bloques = mSize/n;
+            % Vector para almacenar los indices de cada bloque
+            indices = zeros(bloques,1);
+            % Celdas para almacenar los codigos en cada bloque
+            m = {bloques};
+            % Se crean los codigos de tamaño n y se almacenan en el i-ésimo
+            % bloque
+            for i = 1 : bloques
+                indices(i, 1) = i;
+                im = "";
+                for j = 1:n
+                    im = im + mensaje((i*n)-n+j);
+                end
+                m(1,i) = cellstr(im);
+            end
+            % Se cambia de tipo celda a matriz de caracteres
+            m = char(string(m)');
+            % Se decodifica
+            decod = decodificar(m, Ht);
+            % Se verifica el resultado obtenido por la función
+            if(isnumeric(decod))
+                disp("Ha habido un error con el bloque " + num2str(decod));
+                disp(m(decod, :));
+            else
+                % Se agrega la columna de indices a la tabla
+                TC.("i") = indices;
+                % Se agregan los bloques con las palabras a la tabla
+                TC.("c_i") = m;
+                % Se agrega la columna con las palabras obtenidas
+                TC.("palabra_i") = decod;
+                % Se muestra la tabla
+                disp(TC);
+            end
+        else
+            disp("Tamaño del mensaje no válido, retornando.......");
+        end
     end
 end
