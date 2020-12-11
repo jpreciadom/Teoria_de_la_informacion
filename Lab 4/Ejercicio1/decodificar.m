@@ -43,7 +43,6 @@ function words = decodificar(cods, Ht)
                 end
                 if(find == 1)
                     cods(i,j) = mod(cods(i,j)+1,2);
-                    disp(cods(i,:));
                     break;
                 end
             end
