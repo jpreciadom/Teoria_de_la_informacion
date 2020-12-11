@@ -17,8 +17,7 @@ function words = decodificar(cods, Ht)
     for i = 1:numWords
         for j = 1:size(Ht,2)
             if(e(i,j) ~= 0)
-                words = i;
-                return;
+                
             end
         end
     end

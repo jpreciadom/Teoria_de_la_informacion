@@ -34,6 +34,14 @@ cod = codificar(d(1:8,:), G);
 T.("c") = cod;
 cod = cod-'0';
 
+% Se calcula y se agrega el peso de hamming de cada palabra de codigo a la
+% tabla
+hw = zeros(8,1);
+for i = 1:8
+    hw(i,1) = HammingWeight(cod(i,:));
+end
+T.("Peso de hamming") = hw;
+
 % Se imprime la tabla
 disp(T);
 
