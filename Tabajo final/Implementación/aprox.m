@@ -1,3 +1,4 @@
+% Define los datos de clasificación
 p = [1 1 1 1 1 0 0 0 0 0];
 q = [0.8 0.9 0.9 0.6 0.8 0.1 0.4 0.2 0.1 0.3];
 
@@ -5,6 +6,8 @@ format long;
 
 % Calcular la entropia cruzada para cada ejemplo
 results = zeros(size(p,2),1);
+
+%Calcula la entropia cruzada para cada ejemplo
 for i = 1:size(p,2)
 	% Crea la distribucion para cada evento {0, 1}
 	expected = [1.0 - p(i) p(i)];
